@@ -3,61 +3,63 @@
      to get sensor data on the light intensity and thunder sound, to detect proximity
      to the storm front
 
-     Last updated on 4th of Jan, 2019
+     Last updated on 5th of Jan, 2019
      by Laziz Turakulov
 */
 
 int analogPin = A0;         // Analog pin on Spresence extension board
-int lightIntensity = 1022; // Light intensity values sent by LDR sensor
-int lowestValue = 1022;    // TBD - checking the lowest intensity value, detected
+int lightIntensity = 1022;  // Light intensity values sent by LDR sensor
+int lowestValue = 1022;     // The lowest value for light intensity;
+int prevValue = 1022;       // Previous light intensity value for the loop run
+int threshhold = 100;       // To verify sudden change of the light intensity
 
 void setup() {
-  
-  pinMode(LED0, OUTPUT);  // Set output mode for on-boards LEDs
-  pinMode(LED1, OUTPUT);
-  pinMode(LED2, OUTPUT);
-  pinMode(LED3, OUTPUT);
+  /*
+      <<- Old style of LED config and blinking ->>
+      pinMode(LED0, OUTPUT);
+      digitalWrite(LED0, HIGH);
+      digitalWrite(LED0, LOW);
+  */
 
-  digitalWrite(LED0, HIGH); // Switch on all the LEDs in a sequence
+  ledOn(PIN_LED0);         // Switch on all the LEDs in a sequence
   delay(100);
-  digitalWrite(LED1, HIGH);
+  ledOn(PIN_LED1);
   delay(100);
-  digitalWrite(LED2, HIGH);
+  ledOn(PIN_LED2);
   delay(100);
-  digitalWrite(LED3, HIGH);
+  ledOn(PIN_LED3);
   delay(1000);
 
-  digitalWrite(LED0, LOW);  // Switch off all the LEDs in a sequence
+  ledOff(PIN_LED0);         // Switch off all the LEDs in a sequence
   delay(100);
-  digitalWrite(LED1, LOW);
+  ledOff(PIN_LED1);
   delay(100);
-  digitalWrite(LED2, LOW);
+  ledOff(PIN_LED2);
   delay(100);
-  digitalWrite(LED3, LOW);
-  
+  ledOff(PIN_LED3);
+  delay(1000);
+
   Serial.begin(115200); // Set download speed for the Serial Monitor updates
   Serial.println("Spresence is ready");
 }
 
 void loop() {
-
+  prevValue = lightIntensity;
   lightIntensity = analogRead(analogPin); // Get the light intensity measure from LDR sensor
-  Serial.print("Intensity value: ");
-  Serial.print(lightIntensity);         // Print the values on the System Monitor screen
+  Serial.print("Intensity value: ");      // Print telemetry to the System Monitor
+  Serial.print(lightIntensity);           
 
-  if(lowestValue > lightIntensity) {
+  if (lowestValue > lightIntensity) {
     lowestValue = lightIntensity;
   }
-  Serial.print(" , Record value: ");
+  Serial.print(" , Lowest value: ");
   Serial.println(lowestValue);
 
-  if(lightIntensity < 80) {
-    Serial.println("<-------------------------------------->");
-    Serial.println("<-    I've sensed a lightning flash   ->");
-    Serial.println("Now I'll listen for a sound of thunder !");
-    Serial.println("<-------------------------------------->");
+  if (abs(lightIntensity - prevValue) > threshhold && (lightIntensity < 80)) {
+    Serial.println("<----------------------------------------------->");
+    Serial.println("<-    I've possibly sensed a lightning flash   ->");
+    Serial.println("<----------------------------------------------->");
   }
 
-  delay(100);
-
+  delayMicroseconds(20);
 }
