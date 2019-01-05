@@ -7,8 +7,9 @@
      by Laziz Turakulov
 */
 
-int analogPin = A0;     // Analog pin on Spresence extension board
-int lightIntensity = 0; // Light intensity values sent by LDR sensor
+int analogPin = A0;         // Analog pin on Spresence extension board
+int lightIntensity = 1022; // Light intensity values sent by LDR sensor
+int lowestValue = 1022;    // TBD - checking the lowest intensity value, detected
 
 void setup() {
   
@@ -42,12 +43,19 @@ void loop() {
 
   lightIntensity = analogRead(analogPin); // Get the light intensity measure from LDR sensor
   Serial.print("Intensity value: ");
-  Serial.println(lightIntensity);         // Print the values on the System Monitor screen
+  Serial.print(lightIntensity);         // Print the values on the System Monitor screen
 
-  if(lightIntensity < 100) {
-    Serial.println("<----------------------->");
-    Serial.println("I've sensed a light flash");
-    Serial.println("<----------------------->");
+  if(lowestValue > lightIntensity) {
+    lowestValue = lightIntensity;
+  }
+  Serial.print(" , Record value: ");
+  Serial.println(lowestValue);
+
+  if(lightIntensity < 80) {
+    Serial.println("<-------------------------------------->");
+    Serial.println("<-    I've sensed a lightning flash   ->");
+    Serial.println("Now I'll listen for a sound of thunder !");
+    Serial.println("<-------------------------------------->");
   }
 
   delay(100);
