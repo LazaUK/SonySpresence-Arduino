@@ -5,15 +5,12 @@
 
      Last updated on 4th of Jan, 2019
      by Laziz Turakulov
-
 */
 
 int analogPin = A0;     // Analog pin on Spresence extension board
 int lightIntensity = 0; // Light intensity values sent by LDR sensor
 
 void setup() {
-
-  pinMode(A0, INPUT);
   
   pinMode(LED0, OUTPUT);  // Set output mode for on-boards LEDs
   pinMode(LED1, OUTPUT);
@@ -43,9 +40,15 @@ void setup() {
 
 void loop() {
 
-  lightIntensity = digitalRead(analogPin); // Get the light intensity measure from LDR sensor
+  lightIntensity = analogRead(analogPin); // Get the light intensity measure from LDR sensor
   Serial.print("Intensity value: ");
   Serial.println(lightIntensity);         // Print the values on the System Monitor screen
+
+  if(lightIntensity < 80) {
+    Serial.println("<----------------------->");
+    Serial.println("I've sensed a light flash");
+    Serial.println("<----------------------->");
+  }
 
   delay(100);
 
