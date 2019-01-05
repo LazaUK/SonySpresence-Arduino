@@ -44,7 +44,7 @@ void loop() {
   Serial.print("Intensity value: ");
   Serial.println(lightIntensity);         // Print the values on the System Monitor screen
 
-  if(lightIntensity < 80) {
+  if(lightIntensity < 100) {
     Serial.println("<----------------------->");
     Serial.println("I've sensed a light flash");
     Serial.println("<----------------------->");
