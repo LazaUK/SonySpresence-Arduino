@@ -13,4 +13,4 @@ This part is now working in the code above, and system is able to detect spikes 
 
 ## Part 3: Enabling sound sensing via MAX4466 Electret Microphone Amplifier
 
-<That's what I need to focus on during my spare time>
+This part would require the use of Arturo Guadalupi's module for converting analog values from Microphone aplifier into the frequency ranges and check if there are any sounds in 100 Hz range within the first 5 seconds after the lightning. As per some reserch, 100 Hz is a predominant frequency of thunder, so we try to use as a part of danger zone assessment process.
