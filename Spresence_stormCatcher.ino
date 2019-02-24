@@ -3,16 +3,22 @@
      to get sensor data on the light intensity and thunder sound, to detect proximity
      to the storm front
 
-     Last updated on 10th of Feb, 2019
+     Last updated on 23rd of Feb, 2019
      by Laziz Turakulov
 */
 
-int analogPin0 = A0;        // Analog pin on Spresence extension board
-int analogPin1 = A2;        // Analog pin on Spresence extension board
-int lightIntensity = 1000;  // Light intensity values sent by LDR sensor
-int lowestValue = 1000;     // The lowest value for light intensity;
-int prevValue = 1000;       // Previous light intensity value for the loop run
-int threshhold = 100;       // To verify sudden change of the light intensity
+// Imported audio frequency metere analyser module of Arturo Guadalupi
+// and used it to detect sound at 100 Hz frequency
+// ttp://arduino.cc/en/Tutorial/SimpleAudioFrequencyMeter
+#include <AudioFrequencyMeter.h>
+AudioFrequencyMeter meter;
+
+unsigned int lightIntensity = 1000;    // Light intensity values sent by LDR sensor
+float soundIntensity = 1000;           // Sound intensity values sent by MIC sensor
+int safeDistance = 5000;               // 5 seconds count to detect if in a danger zone
+int lowestValue = 1000;                // The lowest value for light intensity;
+int prevValue = 1000;                  // Previous light intensity value for the loop run
+int threshhold = 100;                  // To verify sudden change of the light intensity
 
 void setup() {
   /*
@@ -43,6 +49,8 @@ void setup() {
   Serial.begin(115200); // Set download speed for the Serial Monitor updates
   Serial.println("Spresence is ready");
 
+  meter.setBandwidth(50.00, 200.00);    // Ignore frequency out of this range
+  meter.begin(A2, 1000);                // Intialize A2 at sample rate of 1kHz
 }
 
 void loop() {
@@ -64,7 +72,27 @@ void loop() {
     Serial.println("<-    I've possibly sensed a lightning flash   ->");
     Serial.println("<----------------------------------------------->");
 
-    // Placeholder for the sound frequency analyser
+    // Start 5 seconds countdown
+    unsigned long countDown = millis();
+    while (millis() - countDown < safeDistance)
+    {
+      soundIntensity = meter.getFrequency();
+      // Check if it's close to 100 Hz frequency
+      if (frequency > 90 && frequency < 110)
+      {
+        // turn the LEDs on - DANGER ZONE !!
+        ledOn(PIN_LED0);
+        ledOn(PIN_LED1);
+        ledOn(PIN_LED2);
+        ledOn(PIN_LED3);
+      } else {
+        // turn the LEDs off
+        ledOff(PIN_LED0);
+        ledOff(PIN_LED1);
+        ledOff(PIN_LED2);
+        ledOff(PIN_LED3);
+      }
+    }
   }
 
   delayMicroseconds(20);
